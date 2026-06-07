@@ -49,13 +49,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:18px 6%;display:fle
 .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--gold);transition:width .3s}
 .nav-links a:hover{color:var(--white)}
 .nav-links a:hover::after{width:100%}
-.nav-right{display:flex;align-items:center;gap:24px}
-.lang-switch{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(232,184,75,.2);border-radius:100px;padding:4px}
+.nav-backdrop{display:none}
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:10px;cursor:pointer;z-index:1002;transition:border-color .2s,background .2s}
+.hamburger:hover{border-color:rgba(232,184,75,.35);background:rgba(255,255,255,.04)}
+.hamburger span{display:block;width:22px;height:2px;background:var(--white);transition:transform .3s ease,opacity .3s ease;margin:0 auto}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+body.nav-open{overflow:hidden}
+.lang-switch{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(232,184,75,.2);border-radius:100px;padding:4px;flex-shrink:0}
 .lang-btn{background:transparent;border:none;color:var(--silver);font-family:inherit;font-size:.78rem;font-weight:600;padding:6px 12px;border-radius:100px;cursor:pointer;transition:background .2s,color .2s}
 .lang-btn.active{background:var(--gold);color:var(--navy)}
 .lang-btn:hover:not(.active){color:var(--white)}
-.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:10}
-.hamburger span{display:block;width:24px;height:2px;background:var(--white);transition:.3s}
 html[dir="rtl"] body{font-family:'Cairo',sans-serif}
 html[dir="ltr"] body{font-family:var(--font-body)}
 html[dir="rtl"] .section-label{flex-direction:row-reverse}
@@ -229,21 +234,113 @@ footer{background:var(--navy-card);border-top:1px solid rgba(232,184,75,.1);padd
 .footer-reg{font-size:.78rem;color:var(--silver);opacity:.7;margin-top:4px}
 
 /* RESPONSIVE */
+@media(min-width:901px){
+  nav{gap:20px}
+  .nav-links{flex:1;display:flex;justify-content:center;gap:28px}
+  .lang-switch{margin-inline-start:auto}
+}
 @media(max-width:900px){
+  nav{
+    --nav-h:68px;
+    min-height:var(--nav-h);
+    padding:12px 5%;
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:12px;
+  }
   .hero-inner,.why-grid,.cap-grid,.about-grid,.contact-inner{grid-template-columns:1fr}
-  .hero-card-wrap{margin-top:40px}
+  .hero-card-wrap{margin-top:32px}
   .why-visual{display:none}
-  .hamburger{display:flex}
-  .nav-links{position:fixed;top:0;bottom:0;width:260px;flex-direction:column;background:var(--navy-card);padding:80px 32px;box-shadow:-8px 0 32px rgba(0,0,0,.4);}
-  html[dir="ltr"] .nav-links{right:-100%;transition:right .3s}
-  html[dir="ltr"] .nav-links.open{right:0}
-  html[dir="rtl"] .nav-links{left:-100%;transition:left .3s;box-shadow:8px 0 32px rgba(0,0,0,.4)}
-  html[dir="rtl"] .nav-links.open{left:0}
-  .nav-right{gap:12px}
+  #hero{min-height:auto;padding-top:calc(var(--nav-h) + 32px);padding-bottom:48px}
+  .hero-sub{max-width:100%;font-size:.95rem}
+  .hero-ring{width:min(280px,72vw);height:min(280px,72vw)}
+  .hero-orb{width:min(230px,60vw);height:min(230px,60vw)}
+  .logo-container{width:min(210px,55vw);height:min(210px,55vw)}
+  .hamburger{display:flex;grid-row:1;grid-column:1;justify-self:start}
+  .nav-logo{grid-row:1;min-width:0}
+  .nav-logo-text{font-size:1.15rem}
+  html[dir="ltr"] .nav-logo{grid-column:2;justify-self:center}
+  html[dir="ltr"] .lang-switch{grid-column:3;grid-row:1;justify-self:end}
+  html[dir="rtl"] .lang-switch{grid-column:2;grid-row:1;justify-self:center}
+  html[dir="rtl"] .nav-logo{grid-column:3;justify-self:end}
+  .nav-backdrop{
+    display:block;
+    position:fixed;
+    inset:0;
+    background:rgba(4,10,28,.72);
+    backdrop-filter:blur(4px);
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .3s ease,visibility .3s ease;
+    z-index:999;
+  }
+  .nav-backdrop.open{opacity:1;visibility:visible}
+  .nav-links{
+    position:fixed;
+    top:var(--nav-h);
+    left:16px;
+    right:16px;
+    z-index:1001;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    list-style:none;
+    background:linear-gradient(165deg,rgba(23,34,87,.98),rgba(15,31,75,.98));
+    border:1px solid rgba(232,184,75,.18);
+    border-radius:16px;
+    padding:8px;
+    box-shadow:0 24px 48px rgba(0,0,0,.45);
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    visibility:hidden;
+    transform:translateY(-8px);
+    transition:max-height .35s ease,opacity .3s ease,transform .3s ease,visibility .3s ease;
+  }
+  .nav-links.open{
+    max-height:min(420px,calc(100vh - var(--nav-h) - 32px));
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+    overflow-y:auto;
+  }
+  .nav-links li{border-bottom:1px solid rgba(255,255,255,.06)}
+  .nav-links li:last-child{border-bottom:none}
+  .nav-links a{
+    display:block;
+    padding:14px 16px;
+    font-size:.95rem;
+    border-radius:10px;
+    transition:background .2s,color .2s;
+  }
+  .nav-links a::after{display:none}
+  .nav-links a:hover,.nav-links a:focus{background:rgba(232,184,75,.1);color:var(--gold)}
+  .stat{flex:1;min-width:calc(33.333% - 14px);padding:14px 10px}
+  .stat-val{font-size:1.25rem}
+  .stat-key{font-size:.65rem}
+  footer{flex-direction:column;text-align:center;justify-content:center}
+  .tl-card:hover,.contact-card:hover{transform:none}
 }
 @media(max-width:600px){
-  section{padding:80px 5%}
+  section{padding:72px 5%}
   .services-grid,.menu-grid{grid-template-columns:1fr}
+  .section-title{margin-bottom:36px}
+  .cta-group{flex-direction:column;width:100%}
+  .btn-primary,.btn-outline{width:100%;text-align:center}
+  .hero-stats{gap:12px}
+  .stat{min-width:calc(50% - 6px)}
+  .hero-name{font-size:clamp(2.2rem,11vw,3rem)}
+  .hero-tag{font-size:.72rem;padding:5px 12px}
+  .marquee-item{padding:0 28px;font-size:.75rem}
+  .contact-visual{margin-top:24px}
+  .pulse-logo{width:130px;height:130px}
+}
+@media(max-width:400px){
+  .nav-logo-text{display:none}
+  .stat{min-width:100%}
+  .hero-stats{flex-direction:column}
+  .nav-links{left:10px;right:10px}
 }
 </style>
 </head>
@@ -252,29 +349,28 @@ footer{background:var(--navy-card);border-top:1px solid rgba(232,184,75,.1);padd
 <canvas id="particles"></canvas>
 
 <nav>
-  <a href="#" class="nav-logo">
+  <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="#hero" class="nav-logo">
     <div class="nav-logo-img">
       <img src="logo.png" alt="Caterix Logo"/>
     </div>
     <span class="nav-logo-text">Cate<span>rix</span></span>
   </a>
-  <div class="nav-right">
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#hero" data-i18n="nav.home">Home</a></li>
-      <li><a href="#services" data-i18n="nav.services">Services</a></li>
-      <li><a href="#capabilities" data-i18n="nav.capabilities">Capabilities</a></li>
-      <li><a href="#clients" data-i18n="nav.clients">Clients</a></li>
-      <li><a href="#menu" data-i18n="nav.menu">Menu</a></li>
-      <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
-    </ul>
-    <div class="lang-switch" id="langSwitch">
-      <button type="button" class="lang-btn active" data-lang="ar">ع</button>
-      <button type="button" class="lang-btn" data-lang="en">EN</button>
-    </div>
+  <div class="lang-switch" id="langSwitch">
+    <button type="button" class="lang-btn active" data-lang="ar">ع</button>
+    <button type="button" class="lang-btn" data-lang="en">EN</button>
   </div>
-  <div class="hamburger" id="hamburger">
-    <span></span><span></span><span></span>
-  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero" data-i18n="nav.home">Home</a></li>
+    <li><a href="#services" data-i18n="nav.services">Services</a></li>
+    <li><a href="#capabilities" data-i18n="nav.capabilities">Capabilities</a></li>
+    <li><a href="#clients" data-i18n="nav.clients">Clients</a></li>
+    <li><a href="#menu" data-i18n="nav.menu">Menu</a></li>
+    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+  </ul>
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
 </nav>
 
 <!-- HERO -->
@@ -747,8 +843,30 @@ if(btn)applyLanguage(btn.dataset.lang);
 });
 applyLanguage(currentLang);
 
-// HAMBURGER
-document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+// MOBILE NAV
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.getElementById('navLinks');
+const navBackdrop=document.getElementById('navBackdrop');
+
+function closeNav(){
+  navLinks.classList.remove('open');
+  navBackdrop.classList.remove('open');
+  hamburger.classList.remove('open');
+  hamburger.setAttribute('aria-expanded','false');
+  document.body.classList.remove('nav-open');
+}
+
+function toggleNav(){
+  const isOpen=navLinks.classList.toggle('open');
+  navBackdrop.classList.toggle('open',isOpen);
+  hamburger.classList.toggle('open',isOpen);
+  hamburger.setAttribute('aria-expanded',isOpen?'true':'false');
+  document.body.classList.toggle('nav-open',isOpen);
+}
+
+hamburger.addEventListener('click',toggleNav);
+navBackdrop.addEventListener('click',closeNav);
+window.addEventListener('resize',()=>{if(window.innerWidth>900)closeNav()});
 
 // PARTICLES
 const canvas=document.getElementById('particles');
@@ -794,7 +912,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     e.preventDefault();
     const t=document.querySelector(a.getAttribute('href'));
     if(t)t.scrollIntoView({behavior:'smooth'});
-    document.getElementById('navLinks').classList.remove('open');
+    closeNav();
   });
 });
 </script>
